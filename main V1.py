@@ -7,8 +7,8 @@ import numpy
 import talib
 import pprint # used to print message later on if I to use it
 
-API_KEY = os.environ.get('uXkyxhX91JRTUiUooBnL4rftknzxpkVPAs4VgCz4GKJVHDrLeJpIXfGTQ9fhvjgn')
-API_SECRET = os.environ.get('VZU35Wi86GnwALkY36CM1cYjK1CVZrXA7Nt2RD6BdyWlcOUgImjWAPV0arSVCwCZ')
+API_KEY = os.environ.get('API_KEY')
+API_SECRET = os.environ.get('API_SECRET')
 client = Client(API_KEY, API_SECRET)
 
 candles = client.get_klines(symbol='ETHUSDT', interval=Client.KLINE_INTERVAL_1MINUTE)
