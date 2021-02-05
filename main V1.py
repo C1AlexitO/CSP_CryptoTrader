@@ -157,14 +157,10 @@ def on_message(websocket, message, symbol_used='ETHUSDT'):
                     with open('BuySellData.txt', 'a') as f:
                         with redirect_stdout(f):
                             print(tuple_num)
-                    position_value.append(price_of_closes[-1])
-                    in_position = True
-
-                        # for testing purposes no use
-                        #order_succeeded = order(SIDE_BUY, ETH_QUANTITY, symbol_used)
-                                #if order_succeeded:
-                                    #position_value.append(price_of_closes[-1])
-                                    #in_position = True
+                    order_succeeded = order(SIDE_BUY, ETH_QUANTITY, symbol_used)
+                    if order_succeeded:
+                       position_value.append(price_of_closes[-1])
+                       in_position = True
         # Algorithm to determine sell
         if current_rsi > rsi_overbought:
             print("1")
@@ -177,11 +173,9 @@ def on_message(websocket, message, symbol_used='ETHUSDT'):
                         with open('BuySellData.txt', 'a') as f:
                             with redirect_stdout(f):
                                 print(tuple_num)
-                        in_position = False
-                        # for testing purposes no use
-                        # order_succeeded = order(SIDE_SELL, ETH_QUANTITY, symbol_used)
-                        # if order_succeeded:
-                        # in_position = True
+                        order_succeeded = order(SIDE_SELL, ETH_QUANTITY, symbol_used)
+                        if order_succeeded:
+                            in_position = True
 
                     else:
                         print("Don't own any ETH")
