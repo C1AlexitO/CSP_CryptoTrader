@@ -1,3 +1,5 @@
+print("1) ETH 2) BTC 3) BLZ 4) LIT")
+input101 = int(input())
 from contextlib import redirect_stdout
 from binance.client import Client
 from binance.enums import *
@@ -16,17 +18,22 @@ API_SECRET = os.environ.get('API_Secret')
 client = Client(API_KEY, API_SECRET)
 
 in_position = False
-symbol_used='ETHUSDT'
-candles = client.get_historical_klines(symbol_used, Client.KLINE_INTERVAL_1MINUTE, "2 days ago GMT+1")
-candles.reverse()
+candles_eth = client.get_historical_klines('ETHUSDT', Client.KLINE_INTERVAL_1MINUTE, "2 days ago GMT+1")
+candles_eth.reverse()
+candles_btc = client.get_historical_klines('BTCUSDT', Client.KLINE_INTERVAL_1MINUTE, "2 days ago GMT+1")
+candles_btc.reverse()
+candles_lit = client.get_historical_klines('LITUSDT', Client.KLINE_INTERVAL_1MINUTE, "2 days ago GMT+1")
+candles_lit.reverse()
+candles_blz = client.get_historical_klines('BLZUSDT', Client.KLINE_INTERVAL_1MINUTE, "2 days ago GMT+1")
+candles_blz.reverse()
+
 position_value = []
 h = -40
-def thing(xo, yo, zo, co, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21):
-        global in_position, candles, h, rsisave, rsi_overbought, position_value
+#rsi_overbought, rsi_oversold,
+def thing(rsi_overbought, rsi_oversold, candles, xo, yo, zo, co, x2, x3, x4, x5, x6, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24):
+        global in_position, h, position_value
         h = h - 1
         rsi_period = 14
-        rsi_overbought = 71
-        rsi_oversold = 25
         price_of_opens = []
         volume_of_closes = []
         price_of_closes = []
@@ -74,7 +81,7 @@ def thing(xo, yo, zo, co, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x1
             if MFI[xo] > x15:
                 if TRANGE[yo] > x16 and TRANGE[yo] < x17:
                     if real_atr[xo] > x18 and real_atr[xo] < x19:
-                        if obv[zo] > x20:
+                        if obv[zo] > x20 and obv[zo] < x23:
                             # Change back to current_rsi > 15 if not profitable
                             if current_rsi > x21:
                                 if current_rsi < rsi_oversold:
@@ -88,30 +95,32 @@ def thing(xo, yo, zo, co, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x1
                                             with redirect_stdout(f):
                                                  print(tuple_num)
                                         in_position = True
-        if macd[co] > x7:
-            if TRANGE[yo] < x8 and TRANGE[yo] > x9:
-                if real_atr[xo] > x10 and real_atr[xo] < x11:
-                    if in_position:
-                        if current_rsi > x12:
-                            print("SELLOOO")
-                            tuple_num = ("Sell - Price", "Price:", data, "MACD:", macd[co], "OBV:", obv[zo], "RSI:", current_rsi, "TRANGE:", TRANGE[yo], "ATR:", real_atr[xo], "MFI:", MFI[xo], currentTime)
-                            with open('BuySellData.txt', 'a') as f:
-                                with redirect_stdout(f):
-                                    print(tuple_num)
-                            in_position = False
-
-        if macd[co] > x6:
+        if macd[co] > x6 and macd[co] < x24:
             if TRANGE[yo] < x2 and TRANGE[yo] > x3:
                 if real_atr[xo] > x4 and real_atr[xo] < x5:  # maybe change 5 to 4
-                    if in_position:
-                        if current_rsi > rsi_overbought:
-                            print("Sell- Price")
-                            tuple_num = ("Sell - Price", "Price:", data, "MACD:", macd[co], "OBV:", obv[zo], "RSI:", current_rsi, "TRANGE:", TRANGE[yo], "ATR:", real_atr[xo], "MFI:", MFI[xo], currentTime)
-                            with open('BuySellData.txt', 'a') as f:
-                                 with redirect_stdout(f):
-                                    print(tuple_num)
-                            in_position = False
-
-        thing(h+14, h+1, h, h+33, 6, 3.75, 3, 4, 2, 6, 12, 6, 6, 9, 70, -4.5, -9.5, 15, 5, 9.75, 4.5, 6.5, 1000, 10)
-thing(h+14, h+1, h, h+33, 6, 3.75, 3, 4, 2, 6, 12, 6, 6, 9, 70, -4.5, -9.5, 15, 5, 9.75, 4.5, 6.5, 1000, 10)
-print("4")
+                    if obv[zo] < x22:
+                        if in_position:
+                            if current_rsi > rsi_overbought:
+                                print("Sell- Price")
+                                tuple_num = ("Sell - Price", "Price:", data, "MACD:", macd[co], "OBV:", obv[zo], "RSI:", current_rsi, "TRANGE:", TRANGE[yo], "ATR:", real_atr[xo], "MFI:", MFI[xo], currentTime)
+                                with open('BuySellData.txt', 'a') as f:
+                                    with redirect_stdout(f):
+                                        print(tuple_num)
+                                in_position = False
+# 45 29
+        if rsi_oversold == 29:
+            thing(45, 29, candles_btc, h + 14, h + 1, h, h + 33, 110, 60, 70, 115, 35, 0, -25, 18, 0, 1000, 90, 110, 1750, 18, 1750, 2500, 50)
+        if rsi_oversold == 27:
+            thing(71, 27, candles_eth, h + 14, h + 1, h, h + 33, 6, 3.75, 3, 4, 2, -4.5, -9.5, 35, 5, 9.75, 4.5, 6.5, 1000, 10, 5000, 50000, 5000)
+        if rsi_oversold == 28:
+            thing(71, 28, candles_lit, h + 14, h + 1, h, h + 33, 0.30, 0.075, 0.10, 0.25, 0, 0.03, 0.01, 30, 0.05, 0.25, 0.06, 0.15, 145, 0, 5000, 450, 50000)
+        if rsi_oversold == 28.9:
+            thing(80, 28.9, candles_blz, h + 14, h + 1, h, h + 33, 100000, -100000, -100000, 100000, -1, 8, 0, 28, -100000, 100000, -100000, 100000, 80, -100000, 15, 100, 1)
+if input101 == 1:
+    thing(71, 27, candles_eth, h + 14, h + 1, h, h + 33, 6, 3.75, 3, 4, 2, -4.5, -9.5, 35, 5, 9.75, 4.5, 6.5, 1000, 10, 5000, 50000, 5000)
+if input101 == 2:
+    thing(45, 29, candles_btc, h + 14, h + 1, h, h + 33, 110, 60, 70, 115, 35, 0, -25, 18, 0, 1000, 90, 110, 2000, 18, 1750, 2500, 50)
+if input101 == 3:
+    thing(80, 29, candles_blz, h + 14, h + 1, h, h + 33, 100000, -100000, -100000, 100000, -1, 8, 0, 28, -100000, 100000, -100000, 100000, 80, -100000, 15, 100, 1)
+if input101 == 4:
+    thing(74.5, 28, candles_lit, h + 14, h + 1, h, h + 33, 0.30, 0.075, 0.10, 0.25, 0, 0.03, 0.01, 30, 0.05, 0.25, 0.06, 0.15, 145, 0, 5000, 450, 50000)
